@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   common_tags = {
-    Project     = "api"
+    Project     = "drill"
     Environment = "dev"
     CreatedBy   = "Terraform"
   }

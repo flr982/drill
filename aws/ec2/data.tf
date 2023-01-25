@@ -1,0 +1,26 @@
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+
+data "aws_ami" "ecs" {
+  most_recent = true # get the latest version   
+
+  filter {
+    name = "name"
+    values = [
+      "amzn2-ami-ecs-*" # ECS optimized image
+    ]
+  }
+
+  filter {
+    name = "virtualization-type" # dfghjkl
+    values = [
+      "hvm"
+    ]
+  }
+
+  owners = [
+    "amazon" # only official images, blabla
+  ]
+}
