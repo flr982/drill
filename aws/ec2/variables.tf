@@ -1,6 +1,12 @@
-# variable "cluster_name" {
-#   description = "The name to use to create the EclusterC2. Only alphanumeric characters and dash allowed (e.g. 'my-cluster')"
-# }
+variable "project" {
+  description = "Project name"
+  default     = "drill"
+}
+
+variable "env" {
+  description = "Environment name"
+  default     = "dev"
+}
 
 variable "server_name" {
   description = "The name to use to create the EclusterC2. Only alphanumeric characters and dash allowed"
@@ -17,8 +23,18 @@ variable "type" {
   default     = "t3.nano" # General purpose, 2vCPU, 0.5GB
 }
 
+variable "key_name" {
+  description = "ssh key pair name"
+  default     = "t470p-2020"
+}
+
 variable "server_port" {
   description = "The ingress port"
   type        = number
   default     = 8080
+}
+
+variable "allow_ip" {
+  description = "The IP (range) allowed into the SG"
+  default     = "82.78.48.81/32"
 }

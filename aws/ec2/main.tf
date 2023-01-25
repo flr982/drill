@@ -5,8 +5,8 @@ provider "aws" {
 
 locals {
   common_tags = {
-    Project     = "drill"
-    Environment = "dev"
+    Project     = var.project
+    Environment = var.env
     CreatedBy   = "Terraform"
   }
 }
@@ -15,7 +15,7 @@ locals {
 resource "aws_instance" "server" {
   ami                    = var.ami
   instance_type          = var.type
-  key_name               = "t470p-2020"
+  key_name               = var.key_name
   vpc_security_group_ids = [aws_security_group.instance.id]
 
   user_data = <<-EOF
@@ -28,11 +28,11 @@ resource "aws_instance" "server" {
               nohup busybox httpd -f -p ${var.server_port} &
               EOF
 
-  tags = merge (
+  tags = merge(
     local.common_tags,
     {
-    Name = var.server_name
-  }
+      Name = var.server_name
+    }
   )
 }
 
@@ -46,14 +46,14 @@ resource "aws_security_group" "instance" {
     from_port   = var.server_port
     to_port     = var.server_port
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.allow_ip]
   }
 
-    ingress {
+  ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = [var.allow_ip]
   }
 }
 
