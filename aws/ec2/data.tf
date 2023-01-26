@@ -14,13 +14,13 @@ data "aws_ami" "ecs" {
   }
 
   filter {
-    name = "virtualization-type" # dfghjkl
+    name = "virtualization-type"
     values = [
       "hvm"
     ]
   }
 
   owners = [
-    "amazon" # only official images, blabla
+    "amazon" # only official images
   ]
 }
