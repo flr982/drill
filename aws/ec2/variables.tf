@@ -1,3 +1,8 @@
+variable "region" {
+  description = "Region where to depoloy the project"
+  default     = "eu-west-2"
+}
+
 variable "project" {
   description = "Project name"
   default     = "drill"
@@ -14,8 +19,12 @@ variable "server_name" {
 }
 
 variable "ami" {
+  type        = map(any)
   description = "The ID of the AMI to use"
-  default     = "ami-03e08697c325f02ab" # Ubuntu Server 22.04 LTS (HVM), SSD Volume Type, x86
+  default = {
+    eu-central-1 = "ami-0d41436f676752240" # Ubuntu Server 22.04 LTS (HVM), SSD Volume Type, x86
+    eu-west-2    = "ami-0b88982d9d03f32a5"
+  }
 }
 
 variable "type" {
