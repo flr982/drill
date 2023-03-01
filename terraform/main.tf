@@ -28,7 +28,8 @@ module "vpc" {
 
 terraform {
   backend "s3" {
-    bucket = "terraform-study-state"
+    # bucket = "terraform-study-state"
+    bucket = "drill-tf-states"
     key    = "vpc/terraform.tfstate"
     region = "eu-central-1"
 

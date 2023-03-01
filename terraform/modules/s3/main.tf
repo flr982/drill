@@ -30,18 +30,28 @@ resource "aws_s3_bucket_policy" "b" {
 
   policy = <<POLICY
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "allowaccess",
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Effect": "Deny",
-      "Resource": "arn:aws:s3:::${var.bucket_name}/*",
-      "Principal": "*"
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::638626797715:user/florian"
+            },
+            "Action": "s3:ListBucket",
+            "Resource": "arn:aws:s3:::${var.bucket_name}"
+        },
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::638626797715:user/florian"
+            },
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": "arn:aws:s3:::${var.bucket_name}/*"
+        }
+    ]
 }
 POLICY
 }
