@@ -125,13 +125,3 @@ resource "aws_route_table_association" "public" {
 #     },
 #   )
 # }
-
-
-output "vpc_id" {
-  value = aws_vpc.Main.id
-}
-
-# output "public_subtnet_id" {
-#   value = aws_subnet.public_subnet.id
-# }
-

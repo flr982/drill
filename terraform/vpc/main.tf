@@ -13,7 +13,7 @@ locals {
 
 
 module "vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
 
   project              = var.project
   region               = var.region
@@ -37,4 +37,3 @@ terraform {
     encrypt = true
   }
 }
-

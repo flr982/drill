@@ -11,72 +11,37 @@ locals {
   }
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["099720109477"] # Canonical
-}
-
-resource "aws_instance" "server" {
-  # ami                    = lookup(var.ami, var.region)
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.type
-  key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.instance.id]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World from $(hostname -f)">index.html
-              EC2_AVAIL_ZONE=`curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
-              EC2_REGION="`echo \"$EC2_AVAIL_ZONE\" | sed 's/[a-z]$//'`"
-              echo "$EC2_AVAIL_ZONE" >> index.html
-              echo "$EC2_REGION" >> index.html
-              nohup busybox httpd -f -p ${var.server_port} &
-              EOF
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name = var.server_name
-    }
-  )
-}
-
-
-resource "aws_security_group" "instance" {
-  name = "ec2-security-group"
-
-  tags = local.common_tags
-
-  ingress {
-    from_port   = var.server_port
-    to_port     = var.server_port
-    protocol    = "tcp"
-    cidr_blocks = [var.allow_ip]
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.allow_ip]
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config = {
+    bucket = "drill-tf-states"
+    key    = "vpc/terraform.tfstate"
+    region = "eu-central-1"
   }
 }
+
+module "ec2" {
+  source = "../modules/ec2"
+
+  server_count       = var.server_count
+  project            = var.project
+  region             = var.region
+  env                = var.env
+  server_name_prefix = var.server_name_prefix
+  key_name           = var.key_name
+  subnet_id          = data.terraform_remote_state.vpc.outputs.public_subtnet_ids[0] #"subnet-0f893e2306d7470dd"
+  allow_ip           = var.allow_ip
+  server_port        = var.server_port
+  vpc_id             = data.terraform_remote_state.vpc.outputs.vpc_id #"vpc-05f492e7a7d82b9b3"
+  common_tags        = local.common_tags
+}
+
 
 
 terraform {
   backend "s3" {
-    bucket = "terraform-study-state"
+    # bucket = "terraform-study-state"
+    bucket = "drill-tf-states"
     key    = "ec2/terraform.tfstate"
     region = "eu-central-1"
 

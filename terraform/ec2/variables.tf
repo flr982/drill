@@ -1,49 +1,39 @@
-variable "region" {
-  description = "Region where to depoloy the project"
-  default     = "eu-west-2"
-}
-
 variable "project" {
-  description = "Project name"
+  description = "The project name"
+  type        = string
   default     = "drill"
 }
 
+variable "region" {
+  description = "The AWS region to use"
+  type        = string
+  default     = "eu-central-1"
+}
+
 variable "env" {
-  description = "Environment name"
+  description = "The environment name"
+  type        = string
   default     = "dev"
 }
 
-variable "server_name" {
-  description = "The name to use to create the EclusterC2. Only alphanumeric characters and dash allowed"
-  default     = "hammer"
+variable "server_name_prefix" {
+  description = "EC2 instances server name prefix"
 }
 
-variable "ami" {
-  type        = map(any)
-  description = "The ID of the AMI to use"
-  default = {
-    eu-central-1 = "ami-0d41436f676752240" # Ubuntu Server 22.04 LTS (HVM), SSD Volume Type, x86
-    eu-west-2    = "ami-0b88982d9d03f32a5"
-  }
-}
-
-variable "type" {
-  description = "The EC2 instance type"
-  default     = "t3.nano" # General purpose, 2vCPU, 0.5GB
+variable "server_count" {
+  description = "Number of EC2 instances"
+  type        = number
 }
 
 variable "key_name" {
   description = "ssh key pair name"
-  default     = "t470p-2020"
+}
+
+variable "allow_ip" {
+  description = "The IP (range) allowed into the SG"
 }
 
 variable "server_port" {
   description = "The ingress port"
   type        = number
-  default     = 8080
-}
-
-variable "allow_ip" {
-  description = "The IP (range) allowed into the SG"
-  default     = "82.78.48.81/32"
 }
