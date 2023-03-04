@@ -1,40 +1,29 @@
 provider "aws" {
-  region = "eu-central-1"
+  region = var.region
 }
 
 locals {
   common_tags = {
-    Project     = "drill"
-    Environment = "dev"
+    Project     = var.project
+    Environment = var.env
     CreatedBy   = "Terraform"
   }
 }
 
-resource "aws_ecr_repository" "ecr_api_repo" {
-  name                 = "my_ecr_repo"
-  image_tag_mutability = "MUTABLE"
 
-  image_scanning_configuration {
-    scan_on_push = true
-  }
+module "ecr" {
+  source = "../modules/ecr"
 
-  tags = local.common_tags
+  project            = var.project
+  region             = var.region
+  env                = var.env
+  common_tags        = local.common_tags
 }
 
-
-output "name" {
-  value       = aws_ecr_repository.ecr_api_repo.name
-  description = "the name"
-}
-
-output "url" {
-  value       = aws_ecr_repository.ecr_api_repo.repository_url
-  description = "the ecr repo url"
-}
 
 terraform {
   backend "s3" {
-    bucket = "terraform-study-state"
+    bucket = "drill-tf-states"
     key    = "ecr/terraform.tfstate"
     region = "eu-central-1"
 

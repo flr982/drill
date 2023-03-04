@@ -1,19 +1,16 @@
 variable "project" {
   description = "The project name"
   type        = string
-  default     = "drill"
 }
 
 variable "region" {
   description = "The AWS region to use"
   type        = string
-  default     = "eu-central-1"
 }
 
 variable "env" {
   description = "The environment name"
   type        = string
-  default     = "dev"
 }
 
 variable "server_name_prefix" {
