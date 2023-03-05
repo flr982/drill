@@ -13,6 +13,11 @@ variable "env" {
   type        = string
 }
 
+variable "ami" {
+  type        = string
+  description = "The ID of the AMI to use"
+}
+
 variable "server_name_prefix" {
   description = "EC2 instances server name prefix"
 }

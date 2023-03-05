@@ -23,6 +23,7 @@ data "terraform_remote_state" "vpc" {
 module "ec2" {
   source = "../modules/ec2"
 
+  ami                = var.ami
   server_count       = var.server_count
   project            = var.project
   region             = var.region

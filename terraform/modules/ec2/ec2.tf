@@ -17,22 +17,14 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "server" {
   # ami                    = lookup(var.ami, var.region)
   count                       = var.server_count
-  ami                         = data.aws_ami.ubuntu.id
+  # ami                         = data.aws_ami.ubuntu.id
+  ami                         = var.ami
   instance_type               = var.type
   key_name                    = var.key_name
   vpc_security_group_ids      = [aws_security_group.instance.id]
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true
 
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World from $(hostname -f)">index.html
-              EC2_AVAIL_ZONE=`curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
-              EC2_REGION="`echo \"$EC2_AVAIL_ZONE\" | sed 's/[a-z]$//'`"
-              echo "$EC2_AVAIL_ZONE" >> index.html
-              echo "$EC2_REGION" >> index.html
-              nohup busybox httpd -f -p ${var.server_port} &
-              EOF
 
   tags = merge(
     var.common_tags,
@@ -61,6 +53,14 @@ resource "aws_security_group" "instance" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.allow_ip]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   lifecycle {
