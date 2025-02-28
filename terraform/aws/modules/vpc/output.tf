@@ -2,17 +2,11 @@ output "vpc_id" {
   value = aws_vpc.Main.id
 }
 
-# output "public_subtnet_ids" {
-#   value = aws_subnet.public_subnet[each.key].id
-# }
 
-
-# output "public_subtnet_ids" {
-#   value = toset([
-#     for bd in aws_subnet.public_subnet : public_subnet.id
-#   ])
-# }
-
-output "public_subtnet_ids" {
+output "public_subnet_ids" {
   value = values(aws_subnet.public_subnet).*.id
+}
+
+output "private_subnet_ids" {
+  value = try([for subnet in aws_subnet.private_subnet : subnet.id], [])
 }

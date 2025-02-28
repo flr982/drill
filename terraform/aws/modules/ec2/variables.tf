@@ -26,7 +26,7 @@ variable "ami" {
   description = "The ID of the AMI to use"
 }
 
-variable "type" {
+variable "instance_type" {
   description = "The EC2 instance type"
   default     = "t3.micro" # General purpose, 2vCPU, 0.5GB
 }
@@ -46,6 +46,7 @@ variable "vpc_id" {
 variable "server_port" {
   description = "The ingress port"
   type        = number
+  default     = 1000
 }
 
 variable "allow_ip" {

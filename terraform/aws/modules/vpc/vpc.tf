@@ -29,7 +29,7 @@ resource "aws_subnet" "public_subnet" {
 }
 
 resource "aws_subnet" "private_subnet" {
-  for_each                = var.private_subnet_cidrs
+  for_each                = var.private_subnet_cidrs != null ? var.private_subnet_cidrs : {}
   vpc_id                  = aws_vpc.Main.id
   cidr_block              = each.value
   map_public_ip_on_launch = false
@@ -54,7 +54,6 @@ resource "aws_internet_gateway" "IGW" {
     },
   )
 }
-
 
 
 resource "aws_route_table" "public_rt" {

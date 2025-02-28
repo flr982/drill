@@ -26,4 +26,5 @@ variable "public_subnet_cidrs" {
 variable "private_subnet_cidrs" {
   description = "The CIRDs used by the private subnets"
   type        = map(any)
+  default     = {}
 }
