@@ -2,7 +2,6 @@ provider "aws" {
   region = var.region
 }
 
-
 locals {
   common_tags = {
     Project     = var.project
@@ -20,33 +19,56 @@ data "terraform_remote_state" "vpc" {
   }
 }
 
-module "ec2" {
-  source = "../modules/ec2"
 
-  ami                = var.ami
-  server_count       = var.server_count
-  project            = var.project
-  region             = var.region
-  env                = var.env
-  server_name_prefix = var.server_name_prefix
-  key_name           = var.key_name
-  subnet_id          = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0] #"subnet-0f893e2306d7470dd"
-  allow_ip           = var.allow_ip
-  server_port        = var.server_port
-  vpc_id             = data.terraform_remote_state.vpc.outputs.vpc_id #"vpc-05f492e7a7d82b9b3"
-  common_tags        = local.common_tags
+resource "aws_instance" "bastion" {
+  ami                         = var.ami
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
+  vpc_security_group_ids      = [aws_security_group.bastion.id]
+  subnet_id                   = data.terraform_remote_state.vpc.outputs.public_subnet_ids[0]
+  associate_public_ip_address = true
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "bastion"
+    }
+  )
 }
 
+
+resource "aws_security_group" "bastion" {
+  name   = "${var.project}-bastion-sg-${var.env}"
+  vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
+
+  tags = local.common_tags
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.allow_ip]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
 
 terraform {
   backend "s3" {
-    # bucket = "terraform-study-state"
-    bucket = "drill-tf-states"
-    key    = "bastion/terraform.tfstate"
-    region = "eu-central-1"
-
-    # dynamodb_table = "terraform_study_locks"
+    bucket  = "drill-tf-states"
+    key     = "bastion/terraform.tfstate"
+    region  = "eu-central-1"
     encrypt = true
   }
 }
