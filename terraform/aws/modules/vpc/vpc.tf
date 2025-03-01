@@ -72,21 +72,21 @@ resource "aws_route_table" "public_rt" {
 }
 
 
-# resource "aws_route_table" "private_rt" {
-#   vpc_id = aws_vpc.Main.id
-#   route {
-#     cidr_block     = "0.0.0.0/0"
-#     nat_gateway_id = aws_nat_gateway.NATgw.id
-#   }
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.Main.id
+  # route {
+  #   cidr_block     = "0.0.0.0/0"
+  #   nat_gateway_id = aws_nat_gateway.NATgw.id
+  # }
 
-#   tags = merge(
-#     var.common_tags,
-#     {
-#       Name = "${var.project}-prv-${var.env}"
-#     },
-#   )
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project}-prv-${var.env}"
+    },
+  )
 
-# }
+}
 
 
 resource "aws_route_table_association" "public" {
@@ -95,11 +95,39 @@ resource "aws_route_table_association" "public" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-# resource "aws_route_table_association" "private" {
-#   for_each       = var.private_subnet_cidrs
-#   subnet_id      = aws_subnet.private_subnet[each.key].id
-#   route_table_id = aws_route_table.private_rt.id
-# }
+resource "aws_route_table_association" "private" {
+  for_each       = var.private_subnet_cidrs
+  subnet_id      = aws_subnet.private_subnet[each.key].id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+resource "aws_vpc_endpoint" "s3" {
+  vpc_id            = aws_vpc.Main.id
+  service_name      = "com.amazonaws.${var.region}.s3"
+  route_table_ids   = [aws_route_table.private_rt.id]
+  vpc_endpoint_type = "Gateway"
+
+  policy = <<POLICY
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Action": "*",
+      "Effect": "Allow",
+      "Resource": "*",
+      "Principal": "*"
+    }
+  ]
+}
+POLICY
+
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.project}-s3VpcEndPoint-${var.env}"
+    },
+  )
+}
 
 # resource "aws_eip" "nateIP" {
 #   vpc = true

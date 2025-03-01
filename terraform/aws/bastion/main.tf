@@ -41,7 +41,12 @@ resource "aws_security_group" "bastion" {
   name   = "${var.project}-bastion-sg-${var.env}"
   vpc_id = data.terraform_remote_state.vpc.outputs.vpc_id
 
-  tags = local.common_tags
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-bastion-${var.env}"
+    }
+  )
 
   ingress {
     from_port   = 22
