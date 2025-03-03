@@ -17,7 +17,7 @@ variable "ami" {
 
 variable "instance_type" {
   description = "The EC2 instance type"
-  default     = "t3.micro" # General purpose, 2vCPU, 0.5GB
+  default     = "t3a.micro" # General purpose, 2vCPU, 1GB
 }
 
 variable "key_name" {
@@ -28,3 +28,19 @@ variable "allow_ip" {
   description = "The IP (range) allowed into the SG"
   default     = "0.0.0.0/0"
 }
+
+variable "min_size" {
+  description = "ASG min size"
+  default     = 1
+}
+
+variable "max_size" {
+  description = "ASG max size"
+  default     = 2
+}
+
+variable "desired_capacity" {
+  description = "ASG desired capacity"
+  default     = 1
+}
+

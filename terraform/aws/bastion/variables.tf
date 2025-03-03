@@ -17,7 +17,7 @@ variable "ami" {
 
 variable "instance_type" {
   description = "The EC2 instance type"
-  default     = "t3.micro" # General purpose, 2vCPU, 0.5GB
+  default     = "t3.micro" # General purpose, 2vCPU, 1GB
 }
 
 variable "key_name" {

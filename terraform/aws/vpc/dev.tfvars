@@ -1,5 +1,5 @@
 project       = "drill"
-region        = "eu-central-1"
+region        = "eu-north-1"
 env           = "dev"
 
 # VPC

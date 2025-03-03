@@ -38,9 +38,9 @@ resource "aws_launch_template" "time" {
 
 resource "aws_autoscaling_group" "time" {
   name                = "time"
-  min_size            = 1
-  max_size            = 3
-  desired_capacity    = 1
+  min_size            = var.min_size
+  max_size            = var.max_size
+  desired_capacity    = var.desired_capacity
   vpc_zone_identifier = data.terraform_remote_state.vpc.outputs.private_subnet_ids
 
 
