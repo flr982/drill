@@ -56,7 +56,7 @@ jobs:
         working-directory: ./terraform/aws/vpc
 
       - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: ./terraform/aws/vpc/tfplan
@@ -75,7 +75,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2  # ✅ Updated version
 
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: tfplan
           path: ./terraform/aws/vpc
