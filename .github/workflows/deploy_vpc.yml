@@ -15,7 +15,7 @@ on:
       environment:
         description: 'Environment'
         required: true
-        default: 'qa'
+        default: 'dev'
         type: choice
         options:
           - dev
@@ -24,7 +24,7 @@ on:
           - staging
 
 jobs:
-  deploy:
+  terraform-approval:
     runs-on: ubuntu-latest
 
     env:
@@ -60,7 +60,7 @@ jobs:
 
 
   terraform-apply:
-    needs: deploy
+    needs: terraform-approval
     runs-on: ubuntu-latest
     environment: terraform-approval  # 👈 Requires manual approval
     steps:
