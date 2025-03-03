@@ -66,6 +66,8 @@ jobs:
     needs: terraform-approval
     runs-on: ubuntu-latest
     environment: terraform-approval  # Requires manual approval
+    env:
+      AWS_REGION: eu-central-1
 
     steps:
       - name: Checkout Repository
