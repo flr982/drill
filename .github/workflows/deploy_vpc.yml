@@ -1,4 +1,3 @@
----
 name: Terraform Deploy the VPC
 
 on:
@@ -31,46 +30,56 @@ jobs:
       AWS_REGION: eu-central-1
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
-      with:
-        terraform_version: 1.3.7
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2  # ✅ Updated version
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-    - name: Initialize Terraform
-      run: terraform init # -backend-config="bucket=${{ secrets.TF_VAR_STATE_BUCKET }}"
-      working-directory: ./terraform/aws/vpc
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./terraform/aws/vpc
 
-    - name: Validate Terraform
-      run: terraform validate
-      working-directory: ./terraform/aws/vpc
+      - name: Validate Terraform
+        run: terraform validate
+        working-directory: ./terraform/aws/vpc
 
-    - name: Plan Terraform
-      run: terraform plan -var-file=${{ github.event.inputs.environment }}.tfvars -out=tfplan
-      working-directory: ./terraform/aws/vpc
+      - name: Plan Terraform
+        run: terraform plan -var-file=${{ github.event.inputs.environment }}.tfvars -out=tfplan
+        working-directory: ./terraform/aws/vpc
 
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v3
+        with:
+          name: tfplan
+          path: ./terraform/aws/vpc/tfplan
+          retention-days: 1
 
   terraform-apply:
     needs: terraform-approval
     runs-on: ubuntu-latest
-    environment: terraform-approval  # 👈 Requires manual approval
+    environment: terraform-approval  # ✅ Requires manual approval
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v2  # ✅ Updated version
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v3
+        with:
+          name: tfplan
+          path: ./terraform/aws/vpc
 
       - name: Apply Terraform
         run: terraform apply -auto-approve tfplan
         working-directory: ./terraform/aws/vpc
-
