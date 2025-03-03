@@ -1,4 +1,4 @@
-name: Terraform Deploy the VPC
+name: Terraform Destroy the VPC
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ on:
           - staging
 
 jobs:
-  terraform-approval:
+  terraform-plan:
     runs-on: ubuntu-latest
 
     env:
@@ -52,18 +52,11 @@ jobs:
         working-directory: ./terraform/aws/vpc
 
       - name: Plan Terraform
-        run: terraform plan -var-file=${{ github.event.inputs.environment }}.tfvars -out=tfplan
+        run: terraform destroy -var-file=${{ github.event.inputs.environment }}.tfvars
         working-directory: ./terraform/aws/vpc
 
-      - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: ./terraform/aws/vpc/tfplan
-          retention-days: 1
-
-  terraform-apply:
-    needs: terraform-approval
+  terraform-destroy:
+    needs: terraform-plan
     runs-on: ubuntu-latest
     environment: terraform-approval  # Requires manual approval
     env:
@@ -87,12 +80,6 @@ jobs:
         run: terraform init
         working-directory: ./terraform/aws/vpc
 
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: ./terraform/aws/vpc
-
       - name: Apply Terraform
-        run: terraform apply -auto-approve tfplan
+        run: terraform destroy -auto-approve
         working-directory: ./terraform/aws/vpc
