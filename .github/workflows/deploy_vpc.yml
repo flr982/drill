@@ -71,8 +71,8 @@ jobs:
       #   uses: hashicorp/setup-terraform@v2
 
       - name: Apply Terraform
-        # run: terraform apply -auto-approve tfplan
-        run: echo "Manuall approval needed" && pwd
+        run: terraform apply -auto-approve tfplan
+        # run: echo "Manuall approval needed" && pwd
         working-directory: ./terraform/aws/vpc
 
     # - name: Apply Terraform
