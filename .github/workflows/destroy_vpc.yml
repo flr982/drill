@@ -52,7 +52,7 @@ jobs:
         working-directory: ./terraform/aws/vpc
 
       - name: Plan Terraform
-        run: terraform destroy -var-file=${{ github.event.inputs.environment }}.tfvars
+        run: terraform plan -destroy -var-file=${{ github.event.inputs.environment }}.tfvars
         working-directory: ./terraform/aws/vpc
 
   terraform-destroy:
